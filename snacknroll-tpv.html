@@ -1,0 +1,862 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Snack'N'Roll — TPV</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #C9A84C;
+    --gold-light: #E8C96A;
+    --dark: #1a1a1a;
+    --darker: #111111;
+    --card: #242424;
+    --card2: #2e2e2e;
+    --border: #3a3a3a;
+    --text: #f0f0f0;
+    --muted: #888;
+    --red: #e05252;
+    --green: #52c97a;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    background: var(--darker);
+    color: var(--text);
+    font-family: 'Barlow', sans-serif;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+  header {
+    background: var(--dark);
+    border-bottom: 2px solid var(--gold);
+    padding: 10px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-shrink: 0;
+  }
+  header h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 28px;
+    color: var(--gold);
+    letter-spacing: 2px;
+  }
+  header .order-num {
+    font-size: 13px;
+    color: var(--muted);
+  }
+  header .order-num span {
+    color: var(--gold-light);
+    font-weight: 700;
+    font-size: 16px;
+  }
+
+  .main {
+    display: flex;
+    flex: 1;
+    overflow: hidden;
+  }
+
+  /* LEFT: Menu */
+  .menu-panel {
+    flex: 1.4;
+    overflow-y: auto;
+    padding: 12px;
+    background: var(--darker);
+  }
+  .menu-panel::-webkit-scrollbar { width: 4px; }
+  .menu-panel::-webkit-scrollbar-track { background: var(--darker); }
+  .menu-panel::-webkit-scrollbar-thumb { background: var(--border); border-radius: 2px; }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    color: var(--gold);
+    letter-spacing: 2px;
+    margin: 16px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .items-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+  }
+
+  .item-btn {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 8px;
+    cursor: pointer;
+    text-align: center;
+    transition: all 0.15s;
+    color: var(--text);
+  }
+  .item-btn:hover {
+    background: var(--card2);
+    border-color: var(--gold);
+    transform: translateY(-1px);
+  }
+  .item-btn .item-name {
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 1.2;
+    margin-bottom: 4px;
+    text-transform: uppercase;
+  }
+  .item-btn .item-price {
+    color: var(--gold-light);
+    font-size: 14px;
+    font-weight: 600;
+  }
+  .item-btn .item-sub {
+    font-size: 11px;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* RIGHT: Order */
+  .order-panel {
+    width: 320px;
+    background: var(--dark);
+    border-left: 1px solid var(--border);
+    display: flex;
+    flex-direction: column;
+    flex-shrink: 0;
+  }
+  .order-header {
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border);
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 18px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+  }
+  .btn-clear {
+    background: none;
+    border: 1px solid var(--red);
+    color: var(--red);
+    padding: 3px 10px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .btn-clear:hover { background: var(--red); color: #fff; }
+
+  .order-items {
+    flex: 1;
+    overflow-y: auto;
+    padding: 8px;
+  }
+  .order-items::-webkit-scrollbar { width: 3px; }
+  .order-items::-webkit-scrollbar-thumb { background: var(--border); }
+
+  .order-empty {
+    text-align: center;
+    color: var(--muted);
+    padding: 40px 20px;
+    font-size: 14px;
+  }
+
+  .order-line {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 8px 10px;
+    margin-bottom: 6px;
+    position: relative;
+  }
+  .order-line-top {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .qty-ctrl {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    background: var(--darker);
+    border-radius: 5px;
+    overflow: hidden;
+    flex-shrink: 0;
+  }
+  .qty-btn {
+    background: none;
+    border: none;
+    color: var(--gold);
+    font-size: 16px;
+    width: 24px;
+    height: 24px;
+    cursor: pointer;
+    display: flex; align-items: center; justify-content: center;
+    font-weight: 700;
+  }
+  .qty-btn:hover { background: var(--border); }
+  .qty-num {
+    font-weight: 700;
+    font-size: 14px;
+    min-width: 22px;
+    text-align: center;
+    color: var(--text);
+  }
+  .line-name {
+    flex: 1;
+    font-weight: 700;
+    font-size: 13px;
+    text-transform: uppercase;
+    line-height: 1.2;
+  }
+  .line-price {
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--gold-light);
+    flex-shrink: 0;
+  }
+  .line-delete {
+    background: none;
+    border: none;
+    color: var(--muted);
+    cursor: pointer;
+    font-size: 16px;
+    padding: 0 2px;
+    flex-shrink: 0;
+  }
+  .line-delete:hover { color: var(--red); }
+
+  .line-mods {
+    margin-top: 5px;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 3px;
+  }
+  .mod-tag {
+    background: var(--card2);
+    border: 1px solid var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    padding: 1px 6px;
+    color: var(--muted);
+    display: flex;
+    align-items: center;
+    gap: 3px;
+  }
+  .mod-tag.active {
+    border-color: var(--gold);
+    color: var(--gold-light);
+    background: rgba(201,168,76,0.1);
+  }
+  .mod-tag button {
+    background: none;
+    border: none;
+    color: inherit;
+    cursor: pointer;
+    font-size: 11px;
+    padding: 0;
+    line-height: 1;
+  }
+
+  .btn-add-mod {
+    background: none;
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    font-size: 10px;
+    padding: 1px 6px;
+    color: var(--muted);
+    cursor: pointer;
+  }
+  .btn-add-mod:hover { border-color: var(--gold); color: var(--gold); }
+
+  .order-footer {
+    padding: 12px 16px;
+    border-top: 1px solid var(--border);
+  }
+  .total-line {
+    display: flex;
+    justify-content: space-between;
+    font-size: 20px;
+    font-family: 'Bebas Neue', sans-serif;
+    letter-spacing: 1px;
+    color: var(--gold);
+    margin-bottom: 10px;
+  }
+  .btn-print {
+    width: 100%;
+    background: var(--gold);
+    color: var(--darker);
+    border: none;
+    border-radius: 8px;
+    padding: 14px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 20px;
+    letter-spacing: 2px;
+    cursor: pointer;
+    transition: background 0.15s;
+  }
+  .btn-print:hover { background: var(--gold-light); }
+  .btn-print:disabled { background: var(--border); color: var(--muted); cursor: default; }
+
+  /* MODAL personalización */
+  .modal-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+  }
+  .modal-overlay.open { display: flex; }
+  .modal {
+    background: var(--dark);
+    border: 1px solid var(--gold);
+    border-radius: 12px;
+    width: 340px;
+    max-height: 80vh;
+    overflow-y: auto;
+    padding: 20px;
+  }
+  .modal h2 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    color: var(--gold);
+    letter-spacing: 1px;
+    margin-bottom: 16px;
+  }
+  .mod-section { margin-bottom: 14px; }
+  .mod-section-title {
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 6px;
+  }
+  .mod-options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 5px;
+  }
+  .mod-option {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 5px 10px;
+    font-size: 12px;
+    cursor: pointer;
+    color: var(--text);
+    transition: all 0.1s;
+  }
+  .mod-option:hover { border-color: var(--gold); }
+  .mod-option.selected {
+    background: rgba(201,168,76,0.15);
+    border-color: var(--gold);
+    color: var(--gold-light);
+    font-weight: 700;
+  }
+  .modal-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .btn-modal-cancel {
+    flex: 1;
+    background: none;
+    border: 1px solid var(--border);
+    color: var(--muted);
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    font-family: 'Barlow', sans-serif;
+    font-size: 13px;
+  }
+  .btn-modal-ok {
+    flex: 2;
+    background: var(--gold);
+    color: var(--darker);
+    border: none;
+    border-radius: 6px;
+    padding: 10px;
+    cursor: pointer;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 16px;
+    letter-spacing: 1px;
+  }
+  .btn-modal-ok:hover { background: var(--gold-light); }
+
+  /* MOD inline modal */
+  .inline-mod-overlay {
+    display: none;
+    position: fixed; inset: 0;
+    background: rgba(0,0,0,0.6);
+    z-index: 200;
+    align-items: center;
+    justify-content: center;
+  }
+  .inline-mod-overlay.open { display: flex; }
+
+  /* Print styles */
+  @media print {
+    body { background: #fff; color: #000; }
+    .menu-panel, .order-header .btn-clear, .btn-print, .qty-btn, .line-delete, .btn-add-mod { display: none !important; }
+    .main { display: block; }
+    .order-panel {
+      width: 100%;
+      border: none;
+    }
+    .order-items { overflow: visible; }
+    .order-line { border: 1px solid #ccc; margin-bottom: 8px; }
+    .mod-tag button { display: none; }
+    header { display: none; }
+    .print-header { display: block !important; }
+    .order-footer { border-top: 2px solid #000; }
+  }
+  .print-header {
+    display: none;
+    text-align: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px;
+    padding: 10px;
+    border-bottom: 2px solid #000;
+    margin-bottom: 10px;
+    letter-spacing: 2px;
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Snack'N'Roll</h1>
+  <div class="order-num">Pedido #<span id="orderNum">1</span></div>
+</header>
+
+<div class="main">
+
+  <!-- MENU -->
+  <div class="menu-panel">
+
+    <div class="section-title">🌮 Taco Francés</div>
+    <div class="items-grid" id="grid-taco"></div>
+
+    <div class="section-title">🥙 Döner Gourmet</div>
+    <div class="items-grid" id="grid-doner"></div>
+
+    <div class="section-title">🍔 Hamburguesa</div>
+    <div class="items-grid" id="grid-burger"></div>
+
+    <div class="section-title">🍟 Complementos</div>
+    <div class="items-grid" id="grid-compl"></div>
+
+  </div>
+
+  <!-- PEDIDO -->
+  <div class="order-panel">
+    <div class="order-header">
+      <span>Pedido</span>
+      <button class="btn-clear" onclick="clearOrder()">Vaciar</button>
+    </div>
+    <div class="order-items" id="orderItems">
+      <div class="order-empty">Selecciona productos del menú</div>
+    </div>
+    <div class="order-footer">
+      <div class="total-line">
+        <span>TOTAL</span>
+        <span id="totalPrice">0,00 €</span>
+      </div>
+      <button class="btn-print" id="printBtn" onclick="printOrder()" disabled>🖨 IMPRIMIR PEDIDO</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL PERSONALIZACIÓN al añadir -->
+<div class="modal-overlay" id="modalOverlay">
+  <div class="modal">
+    <h2 id="modalTitle">Personalizar</h2>
+    <div id="modalContent"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeModal()">Cancelar</button>
+      <button class="btn-modal-ok" onclick="confirmAdd()">Añadir al pedido</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL EDITAR MOD inline -->
+<div class="inline-mod-overlay" id="inlineModOverlay">
+  <div class="modal">
+    <h2 id="inlineModTitle">Editar extras</h2>
+    <div id="inlineModContent"></div>
+    <div class="modal-actions">
+      <button class="btn-modal-cancel" onclick="closeInlineMod()">Cancelar</button>
+      <button class="btn-modal-ok" onclick="confirmInlineMod()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<div class="print-header" id="printHeader">SNACK'N'ROLL — Pedido #<span id="printOrderNum">1</span></div>
+
+<script>
+// ===================== MENU DATA =====================
+const MENU = {
+  taco: [
+    { id:'t1', name:'Taco Pollo', price:5.00, mods: true },
+    { id:'t2', name:'Taco Carne Picada', price:5.00, mods: true },
+    { id:'t3', name:'Taco Salchicha', price:5.00, mods: true },
+    { id:'t4', name:'Taco Especial', price:6.00, mods: true },
+    { id:'t5', name:'Taco Mixto', sub:'Pollo + Carne', price:6.00, mods: true },
+  ],
+  doner: [
+    { id:'d1', name:'Durum Normal', price:4.00, mods: true },
+    { id:'d2', name:'Durum Grande', price:6.00, mods: true },
+  ],
+  burger: [
+    { id:'b1', name:'Hamburguesa', sub:'Carne vacuno 100%', price:7.00, mods: true },
+  ],
+  compl: [
+    { id:'c1', name:'Ración Patatas', price:2.50, mods: false },
+    { id:'c2', name:'Refresco', price:1.50, mods: false },
+    { id:'c3', name:'Queso Cheddar', price:0.50, mods: false },
+  ]
+};
+
+// Extras/modificadores por categoría
+const MODS = {
+  taco: {
+    extras: [
+      { key:'grande', label:'Hazlo Grande', price:2.00 },
+      { key:'extra_salsa', label:'Extra Salsa', price:0.50 },
+    ],
+    quitar: ['Lechuga','Tomate','Cebolla','Salsa','Queso'],
+    notas: ['Poco picante','Muy picante','Sin picante','Bien tostado','Sin tostar']
+  },
+  doner: {
+    extras: [
+      { key:'extra_carne', label:'Extra Carne', price:2.00 },
+      { key:'extra_salsa', label:'Extra Salsa', price:0.50 },
+    ],
+    quitar: ['Lechuga','Tomate','Cebolla','Patatas','Salsa'],
+    notas: ['Poco picante','Muy picante','Sin picante','Bien tostado']
+  },
+  burger: {
+    extras: [
+      { key:'doble', label:'Doble (x2 carne)', price:3.00 },
+      { key:'menu', label:'Menú (+patatas+refresco)', price:3.00 },
+    ],
+    quitar: ['Huevo','Cebolla caramelizada','Queso','Tomate','Lechuga'],
+    notas: ['Poco hecha','Muy hecha','Sin gluten si hay']
+  }
+};
+
+let order = [];
+let orderCounter = 1;
+let pendingItem = null;
+let pendingMods = { extras:[], quitar:[], notas:[] };
+let editingLineIndex = null;
+let editingMods = { extras:[], quitar:[], notas:[] };
+
+// ===================== RENDER MENU =====================
+function renderMenu() {
+  renderGrid('grid-taco', MENU.taco, 'taco');
+  renderGrid('grid-doner', MENU.doner, 'doner');
+  renderGrid('grid-burger', MENU.burger, 'burger');
+  renderGrid('grid-compl', MENU.compl, null);
+}
+
+function renderGrid(gridId, items, category) {
+  const grid = document.getElementById(gridId);
+  grid.innerHTML = '';
+  items.forEach(item => {
+    const btn = document.createElement('button');
+    btn.className = 'item-btn';
+    btn.innerHTML = `
+      <div class="item-name">${item.name}</div>
+      ${item.sub ? `<div class="item-sub">${item.sub}</div>` : ''}
+      <div class="item-price">${item.price.toFixed(2).replace('.',',')} €</div>
+    `;
+    btn.onclick = () => startAdd(item, category);
+    grid.appendChild(btn);
+  });
+}
+
+// ===================== ADD ITEM =====================
+function startAdd(item, category) {
+  if (!category || !MODS[category]) {
+    // Sin personalización, añadir directo
+    addToOrder(item, {extras:[], quitar:[], notas:[]});
+    return;
+  }
+  pendingItem = { item, category };
+  pendingMods = { extras:[], quitar:[], notas:[] };
+  openModal(item, category, pendingMods, false);
+}
+
+function openModal(item, category, modsState, isEdit) {
+  const mods = MODS[category];
+  document.getElementById('modalTitle').textContent = item.name;
+  let html = '';
+
+  if (mods.extras && mods.extras.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">⬆ Extras</div>
+      <div class="mod-options">`;
+    mods.extras.forEach(e => {
+      const sel = modsState.extras.includes(e.key) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'extras','${e.key}')">${e.label} <span style="color:var(--gold-light)">+${e.price.toFixed(2).replace('.',',')}€</span></div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  if (mods.quitar && mods.quitar.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">❌ Sin...</div>
+      <div class="mod-options">`;
+    mods.quitar.forEach(q => {
+      const sel = modsState.quitar.includes(q) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'quitar','${q}')">Sin ${q}</div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  if (mods.notas && mods.notas.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">📝 Notas</div>
+      <div class="mod-options">`;
+    mods.notas.forEach(n => {
+      const sel = modsState.notas.includes(n) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'notas','${n}')">${n}</div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  if (!isEdit) {
+    document.getElementById('modalContent').innerHTML = html;
+    document.getElementById('modalOverlay').classList.add('open');
+  }
+  return html;
+}
+
+function toggleMod(el, type, key) {
+  // Works for both modal and inline
+  const targetMods = editingLineIndex !== null ? editingMods : pendingMods;
+  el.classList.toggle('selected');
+  if (el.classList.contains('selected')) {
+    if (!targetMods[type].includes(key)) targetMods[type].push(key);
+  } else {
+    targetMods[type] = targetMods[type].filter(k => k !== key);
+  }
+}
+
+function confirmAdd() {
+  if (!pendingItem) return;
+  addToOrder(pendingItem.item, { ...pendingMods });
+  closeModal();
+}
+
+function closeModal() {
+  document.getElementById('modalOverlay').classList.remove('open');
+  pendingItem = null;
+  pendingMods = { extras:[], quitar:[], notas:[] };
+}
+
+function addToOrder(item, mods) {
+  // Check if identical line exists (same id, same mods)
+  const modsKey = JSON.stringify(mods);
+  const existing = order.find(l => l.item.id === item.id && JSON.stringify(l.mods) === modsKey);
+  if (existing) {
+    existing.qty++;
+  } else {
+    order.push({ item, mods, qty: 1 });
+  }
+  renderOrder();
+}
+
+// ===================== ORDER =====================
+function renderOrder() {
+  const container = document.getElementById('orderItems');
+  if (order.length === 0) {
+    container.innerHTML = '<div class="order-empty">Selecciona productos del menú</div>';
+    document.getElementById('totalPrice').textContent = '0,00 €';
+    document.getElementById('printBtn').disabled = true;
+    return;
+  }
+  document.getElementById('printBtn').disabled = false;
+
+  let total = 0;
+  container.innerHTML = '';
+
+  order.forEach((line, idx) => {
+    const basePrice = line.item.price;
+    let extrasPrice = 0;
+    const cat = getCategoryForItem(line.item.id);
+    if (cat && MODS[cat]) {
+      MODS[cat].extras.forEach(e => {
+        if (line.mods.extras.includes(e.key)) extrasPrice += e.price;
+      });
+    }
+    const linePrice = (basePrice + extrasPrice) * line.qty;
+    total += linePrice;
+
+    // Build mod tags
+    let modTagsHTML = '';
+    if (cat && MODS[cat]) {
+      MODS[cat].extras.forEach(e => {
+        if (line.mods.extras.includes(e.key)) {
+          modTagsHTML += `<span class="mod-tag active">+${e.label}</span>`;
+        }
+      });
+    }
+    line.mods.quitar.forEach(q => {
+      modTagsHTML += `<span class="mod-tag active">Sin ${q}</span>`;
+    });
+    line.mods.notas.forEach(n => {
+      modTagsHTML += `<span class="mod-tag active">${n}</span>`;
+    });
+
+    const hasMods = cat && MODS[cat];
+
+    const div = document.createElement('div');
+    div.className = 'order-line';
+    div.innerHTML = `
+      <div class="order-line-top">
+        <div class="qty-ctrl">
+          <button class="qty-btn" onclick="changeQty(${idx},-1)">−</button>
+          <span class="qty-num">${line.qty}</span>
+          <button class="qty-btn" onclick="changeQty(${idx},1)">+</button>
+        </div>
+        <div class="line-name">${line.item.name}</div>
+        <div class="line-price">${linePrice.toFixed(2).replace('.',',')}€</div>
+        <button class="line-delete" onclick="removeLine(${idx})">✕</button>
+      </div>
+      ${modTagsHTML || hasMods ? `
+      <div class="line-mods">
+        ${modTagsHTML}
+        ${hasMods ? `<button class="btn-add-mod" onclick="openInlineMod(${idx})">+ editar</button>` : ''}
+      </div>` : ''}
+    `;
+    container.appendChild(div);
+  });
+
+  document.getElementById('totalPrice').textContent = total.toFixed(2).replace('.',',') + ' €';
+}
+
+function changeQty(idx, delta) {
+  order[idx].qty += delta;
+  if (order[idx].qty <= 0) order.splice(idx, 1);
+  renderOrder();
+}
+
+function removeLine(idx) {
+  order.splice(idx, 1);
+  renderOrder();
+}
+
+function clearOrder() {
+  if (order.length === 0) return;
+  if (confirm('¿Vaciar el pedido?')) {
+    order = [];
+    renderOrder();
+  }
+}
+
+function getCategoryForItem(id) {
+  if (id.startsWith('t')) return 'taco';
+  if (id.startsWith('d')) return 'doner';
+  if (id.startsWith('b')) return 'burger';
+  return null;
+}
+
+// ===================== INLINE MOD EDIT =====================
+function openInlineMod(idx) {
+  editingLineIndex = idx;
+  const line = order[idx];
+  const cat = getCategoryForItem(line.item.id);
+  if (!cat || !MODS[cat]) return;
+
+  editingMods = {
+    extras: [...line.mods.extras],
+    quitar: [...line.mods.quitar],
+    notas: [...line.mods.notas]
+  };
+
+  const mods = MODS[cat];
+  document.getElementById('inlineModTitle').textContent = line.item.name;
+  let html = '';
+
+  if (mods.extras && mods.extras.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">⬆ Extras</div>
+      <div class="mod-options">`;
+    mods.extras.forEach(e => {
+      const sel = editingMods.extras.includes(e.key) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'extras','${e.key}')">${e.label} <span style="color:var(--gold-light)">+${e.price.toFixed(2).replace('.',',')}€</span></div>`;
+    });
+    html += `</div></div>`;
+  }
+  if (mods.quitar && mods.quitar.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">❌ Sin...</div>
+      <div class="mod-options">`;
+    mods.quitar.forEach(q => {
+      const sel = editingMods.quitar.includes(q) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'quitar','${q}')">Sin ${q}</div>`;
+    });
+    html += `</div></div>`;
+  }
+  if (mods.notas && mods.notas.length) {
+    html += `<div class="mod-section">
+      <div class="mod-section-title">📝 Notas</div>
+      <div class="mod-options">`;
+    mods.notas.forEach(n => {
+      const sel = editingMods.notas.includes(n) ? 'selected' : '';
+      html += `<div class="mod-option ${sel}" onclick="toggleMod(this,'notas','${n}')">${n}</div>`;
+    });
+    html += `</div></div>`;
+  }
+
+  document.getElementById('inlineModContent').innerHTML = html;
+  document.getElementById('inlineModOverlay').classList.add('open');
+}
+
+function closeInlineMod() {
+  document.getElementById('inlineModOverlay').classList.remove('open');
+  editingLineIndex = null;
+}
+
+function confirmInlineMod() {
+  if (editingLineIndex === null) return;
+  order[editingLineIndex].mods = { ...editingMods };
+  closeInlineMod();
+  renderOrder();
+}
+
+// ===================== PRINT =====================
+function printOrder() {
+  if (order.length === 0) return;
+  const num = orderCounter;
+  document.getElementById('printOrderNum').textContent = num;
+  document.getElementById('printHeader').style.display = 'block';
+  window.print();
+  document.getElementById('printHeader').style.display = 'none';
+  // After print, clear and increment
+  setTimeout(() => {
+    orderCounter++;
+    document.getElementById('orderNum').textContent = orderCounter;
+    order = [];
+    renderOrder();
+  }, 500);
+}
+
+// ===================== INIT =====================
+renderMenu();
+</script>
+</body>
+</html>
